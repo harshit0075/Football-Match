@@ -1,11 +1,35 @@
 import styled from "styled-components";
-
+import { useEffect, useState } from "react";
+import { useDispatch} from "react-redux";
+import { getMatches } from "../Redux/Matches/action";
 export const Sidebar = () => {
+  const [order,setOrder]=useState("")
+  const [page,setPage]=useState(1)
+  const handleSort=(e)=>{
+   const value=e.target.value
+   setOrder(value)
+  }
+  
+ 
+  const handlePage = (val) => {
+    setPage((prev) => prev + val);
+  };
+  const dispatch=useDispatch()
+  useEffect(()=>{
+    const paramObj={
+      params:{
+         _sort:"year",
+         _order:order,
+         page,
+      }
+    }
+    dispatch(getMatches(order&&paramObj&&page))
+},[order])
   return (
     <DIV>
       <h3>Sort By Year</h3>
-      <div>
-        <input data-testid="sort-asc" type="radio" name="sort" value={"asc"} />
+      <div onChange={handleSort}>
+        <input data-testid="sort-asc" type="radio" name="sort" value={"asc"} defaultChecked={order==="asc"}/>
         <label>Ascending</label>
         <br />
         <br />
@@ -21,11 +45,11 @@ export const Sidebar = () => {
       <br />
       <br />
       <br />
-      <h3 data-testid="page-number">Page No. </h3>
-      <button data-testid="previous-page">Previous</button>
+      <h3 data-testid="page-number">Page No.{page} </h3>
+      <button data-testid="previous-page" disabled={page === 1} onClick={()=>handlePage(-1)}>Previous</button>
       <br />
       <br />
-      <button data-testid="next-page">Next</button>
+      <button data-testid="next-page"  onClick={()=>handlePage(+1)}>Next</button>
     </DIV>
   );
 };
